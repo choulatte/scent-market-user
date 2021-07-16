@@ -37,6 +37,8 @@ class WebSecurityConfig (
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/users").permitAll()
             .antMatchers(HttpMethod.GET, "/users/refresh").permitAll()
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**").permitAll()
             .anyRequest().authenticated()
     }
 }
