@@ -20,7 +20,8 @@ class User(
     @Column(name = "password", length = 300, nullable = false)
     private val password: String? = null,
 
-    // TODO(roles implement)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private val roles: MutableList<String> = ArrayList()
 ) {
     fun getId(): Long? {
         return this.id
@@ -31,7 +32,8 @@ class User(
             id = this.id,
             username = this.username,
             email = this.email,
-            password = this.password
+            password = this.password,
+            roles = this.roles
         )
     }
 }

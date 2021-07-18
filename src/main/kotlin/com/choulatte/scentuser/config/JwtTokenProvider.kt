@@ -15,8 +15,8 @@ class JwtTokenProvider(
         secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
     }
 
-    fun createToken(userIdx: String?, roles: List<String?>): String? {
-        val claims = Jwts.claims().setSubject(userIdx)
+    fun createToken(username: String?, roles: List<String?>): String? {
+        val claims = Jwts.claims().setSubject(username)
         claims["roles"] = roles
         val now = Date()
         return Jwts.builder().setClaims(claims).setIssuedAt(now)

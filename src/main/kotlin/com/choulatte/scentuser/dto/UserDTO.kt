@@ -7,11 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.util.stream.Collectors
 
 data class UserDTO(
-    private val id: Long? = null,
-    private val username: String? = null,
-    private val email: String? = null,
-    private var password: String? = null,
-    private val roles: List<String> = ArrayList()
+    val id: Long?,
+    private val username: String?,
+    val email: String?,
+    private var password: String?,
+    var roles: MutableList<String>
 ) : UserDetails {
     override fun getPassword(): String {
         return this.getPassword()
@@ -58,6 +58,7 @@ data class UserDTO(
             id = this.id,
             username = this.username,
             email = this.email,
-            password = this.password)
+            password = this.password,
+            roles = this.roles)
     }
 }

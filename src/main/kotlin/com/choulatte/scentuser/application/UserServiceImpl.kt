@@ -11,6 +11,18 @@ class UserServiceImpl(
 ) : UserService {
     lateinit var passwordEncoder: PasswordEncoder
 
+    override fun login(userDTO: UserDTO): Boolean? {
+        val user: UserDTO = loadUserByUsername(userDTO.username)!!
+
+        if (passwordEncoder.matches(user.password, userDTO.password)) {
+            userDTO.roles = user.roles
+
+            return true
+        }
+
+        return false
+    }
+
     override fun join(user: UserDTO): Long? {
         user.encodePassword { password -> passwordEncoder.encode(password) }
 
