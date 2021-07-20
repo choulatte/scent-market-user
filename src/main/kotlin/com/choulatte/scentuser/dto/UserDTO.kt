@@ -8,17 +8,17 @@ import java.util.stream.Collectors
 
 data class UserDTO(
     val id: Long?,
-    private val username: String?,
+    private val username: String,
     val email: String?,
-    private var password: String?,
+    private var password: String,
     var roles: MutableList<String>
 ) : UserDetails {
     override fun getPassword(): String {
-        return this.getPassword()
+        return this.password
     }
 
     override fun getUsername(): String {
-        return this.getUsername()
+        return this.username
     }
 
     override fun getAuthorities(): Collection<GrantedAuthority?> {
@@ -53,9 +53,21 @@ data class UserDTO(
         return this
     }
 
+    fun sealPassword(): UserDTO {
+        this.password = "SEALING"
+
+        return this
+    }
+
+    fun setDefaultRole(): UserDTO {
+        this.roles.clear()
+        this.roles.add("USER_ROLE")
+
+        return this
+    }
+
     fun toEntity(): User {
         return User(
-            id = this.id,
             username = this.username,
             email = this.email,
             password = this.password,

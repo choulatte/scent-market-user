@@ -1,5 +1,6 @@
 package com.choulatte.scentuser.config
 
+import com.choulatte.scentuser.dto.TokenRespDTO
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Component
@@ -15,13 +16,14 @@ class JwtTokenProvider(
         secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
     }
 
-    fun createToken(username: String?, roles: List<String?>): String? {
+    fun createToken(username: String?, roles: List<String?>): TokenRespDTO? {
         val claims = Jwts.claims().setSubject(username)
         claims["roles"] = roles
         val now = Date()
-        return Jwts.builder().setClaims(claims).setIssuedAt(now)
+        return TokenRespDTO(validationToken = Jwts.builder().setClaims(claims).setIssuedAt(now)
             .setExpiration(Date(now.time + tokenValidTime))
-            .signWith(SignatureAlgorithm.HS256, secretKey).compact()
+            .signWith(SignatureAlgorithm.HS256, secretKey).compact(),
+            refreshToken = "refresh token is not supported.")
     }
 
     fun getUserIdx(token: String?): String? {

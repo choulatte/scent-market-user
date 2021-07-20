@@ -1,7 +1,9 @@
 package com.choulatte.scentuser.application
 
+import com.choulatte.scentuser.dto.LoginReqDTO
 import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -9,24 +11,23 @@ import org.springframework.stereotype.Service
 class UserServiceImpl(
     val userRepository: UserRepository
 ) : UserService {
+    @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 
-    override fun login(userDTO: UserDTO): Boolean? {
-        val user: UserDTO = loadUserByUsername(userDTO.username)!!
+    override fun login(loginReqDTO: LoginReqDTO): UserDTO? {
+        val user: UserDTO = loadUserByUsername(loginReqDTO.username)!!
 
-        if (passwordEncoder.matches(user.password, userDTO.password)) {
-            userDTO.roles = user.roles
-
-            return true
+        if (passwordEncoder.matches(loginReqDTO.password, user.password)) {
+            return user.sealPassword()
         }
 
-        return false
+        return null
     }
 
-    override fun join(user: UserDTO): Long? {
-        user.encodePassword { password -> passwordEncoder.encode(password) }
+    override fun join(userDTO: UserDTO): Long? {
+        userDTO.setDefaultRole().encodePassword { password -> passwordEncoder.encode(password) }
 
-        return userRepository.save(user.toEntity()).getId()
+        return userRepository.save(userDTO.toEntity()).getId()
     }
 
     override fun loadUserByUsername(username: String): UserDTO? {

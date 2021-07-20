@@ -30,9 +30,9 @@ class User(
     fun toDTO(): UserDTO {
         return UserDTO(
             id = this.id,
-            username = this.username,
+            username = this.username.orEmpty(),
             email = this.email,
-            password = this.password,
+            password = this.password.orEmpty(),
             roles = this.roles
         )
     }
