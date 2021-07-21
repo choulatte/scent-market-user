@@ -6,10 +6,7 @@ import com.choulatte.scentuser.dto.LoginReqDTO
 import com.choulatte.scentuser.dto.TokenRespDTO
 import com.choulatte.scentuser.dto.UserDTO
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/users"])
@@ -32,4 +29,15 @@ class UserController(
     fun join(@RequestBody userDTO: UserDTO): ResponseEntity<Long> {
         return ResponseEntity.ok(userService.join(userDTO))
     }
+
+    @PutMapping(value = [""])
+    fun updateUserInfo(@RequestBody userDTO: UserDTO): ResponseEntity<UserDTO> {
+        return ResponseEntity.ok(userService.updateUserInfo(userDTO))
+    }
+
+    @DeleteMapping(value = [""])
+    fun withdraw(@RequestBody userDTO: UserDTO): ResponseEntity<Boolean> {
+        return ResponseEntity.ok(userService.withdraw(userDTO))
+    }
+
 }

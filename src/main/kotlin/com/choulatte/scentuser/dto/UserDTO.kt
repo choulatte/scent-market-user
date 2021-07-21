@@ -1,17 +1,23 @@
 package com.choulatte.scentuser.dto
 
 import com.choulatte.scentuser.domain.User
+import com.choulatte.scentuser.domain.UserStatusType
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.util.*
 import java.util.stream.Collectors
 
 data class UserDTO(
     val id: Long?,
     private val username: String,
-    val email: String?,
+    var email: String?,
     private var password: String,
-    var roles: MutableList<String>
+    var roles: MutableList<String>,
+    var recordedDate: Date?,
+    var lastModifiedDate: Date?,
+    var statusType: UserStatusType?,
+    var validity: Boolean?
 ) : UserDetails {
     override fun getPassword(): String {
         return this.password
@@ -32,11 +38,11 @@ data class UserDTO(
     }
 
     override fun isAccountNonExpired(): Boolean {
-        return true
+        return this.statusType != UserStatusType.EXPIRED && this.validity == true
     }
 
     override fun isAccountNonLocked(): Boolean {
-        return true
+        return this.statusType != UserStatusType.LOCKED && this.validity == true
     }
 
     override fun isCredentialsNonExpired(): Boolean {
@@ -44,7 +50,7 @@ data class UserDTO(
     }
 
     override fun isEnabled(): Boolean {
-        return true
+        return this.statusType == UserStatusType.NORMAL && this.validity == true
     }
 
     fun encodePassword(encode: (String?) -> String): UserDTO {
@@ -71,6 +77,10 @@ data class UserDTO(
             username = this.username,
             email = this.email,
             password = this.password,
-            roles = this.roles)
+            roles = this.roles,
+            recordedDate = Date(),
+            lastModifiedDate = Date(),
+            statusType = UserStatusType.NORMAL,
+            validity = true)
     }
 }

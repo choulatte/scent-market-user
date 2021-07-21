@@ -36,6 +36,8 @@ class WebSecurityConfig (
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/users", "/users/join").permitAll()
+            .antMatchers(HttpMethod.PUT, "/users").permitAll()
+            .antMatchers(HttpMethod.DELETE, "/users").permitAll()
             .antMatchers(HttpMethod.GET, "/users/refresh").permitAll()
             .antMatchers("/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui/**").permitAll()
             .anyRequest().authenticated()
