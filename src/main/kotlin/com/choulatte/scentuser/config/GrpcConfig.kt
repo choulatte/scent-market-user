@@ -9,15 +9,11 @@ import org.springframework.context.annotation.Configuration
 class GrpcConfig {
     @Bean(name = ["pay"])
     fun setPayChannel(): ManagedChannel {
-        return ManagedChannelBuilder
-            .forAddress("172.20.10.3", 8090)
-            .usePlaintext().build()
+        return ManagedChannelBuilder.forAddress("172.20.10.3", 8090).usePlaintext().build()
     }
 
     @Bean(name = ["product"])
     fun setProductChannel(): ManagedChannel {
-        return ManagedChannelBuilder
-            .forAddress("172.20.10.4", 8091)
-            .usePlaintext().build()
+        return ManagedChannelBuilder.forAddress("172.20.10.4", 8091).usePlaintext().build()
     }
 }

@@ -28,12 +28,7 @@ data class UserDTO(
     }
 
     override fun getAuthorities(): Collection<GrantedAuthority?> {
-        return roles.stream()
-            .map { role: String? ->
-                SimpleGrantedAuthority(
-                    role
-                )
-            }
+        return roles.stream().map { role: String? -> SimpleGrantedAuthority(role) }
             .collect(Collectors.toList())
     }
 

@@ -88,6 +88,7 @@ class UserServiceImpl(
 
                 override fun onError(t: Throwable?) {
                     isAnyRequestNotProcessed = true
+                    countDownLatch.countDown()
                 }
 
                 override fun onCompleted() {
@@ -107,6 +108,7 @@ class UserServiceImpl(
 
                 override fun onError(t: Throwable?) {
                     isAnyRequestNotProcessed = true
+                    countDownLatch.countDown()
                 }
 
                 override fun onCompleted() {
