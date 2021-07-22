@@ -25,7 +25,7 @@ class UserServiceImpl(
     private val payChannel: ManagedChannel,
     @Qualifier(value = "product")
     private val productChannel: ManagedChannel
-) : UserService {
+): UserService {
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 

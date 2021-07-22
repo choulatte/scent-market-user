@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @EnableWebSecurity
 class WebSecurityConfig (
     private val userService: UserService
-) : WebSecurityConfigurerAdapter() {
+): WebSecurityConfigurerAdapter() {
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()

@@ -4,5 +4,4 @@ data class TokenRespDTO(
     val validationToken: String?,
     val refreshToken: String?
 ) {
-
 }
