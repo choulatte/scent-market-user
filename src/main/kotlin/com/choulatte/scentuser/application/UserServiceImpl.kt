@@ -10,9 +10,9 @@ import com.choulatte.scentuser.dto.LoginReqDTO
 import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.repository.UserRepository
 import io.grpc.ManagedChannel
-import io.grpc.ManagedChannelBuilder
 import io.grpc.stub.StreamObserver
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.concurrent.CountDownLatch
@@ -20,19 +20,17 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class UserServiceImpl(
-    val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    @Qualifier(value = "pay")
+    private val payChannel: ManagedChannel,
+    @Qualifier(value = "product")
+    private val productChannel: ManagedChannel
 ) : UserService {
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 
-    private val payChannel: ManagedChannel = ManagedChannelBuilder
-        .forAddress("172.20.10.3", 8090)
-        .usePlaintext().build()
-    private val productChannel: ManagedChannel = ManagedChannelBuilder
-        .forAddress("172.20.10.4", 8091)
-        .usePlaintext().build()
-    private val accountStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
-    private val productStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)
+    private val accountServiceStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
+    private val productServiceStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)
 
     override fun login(loginReqDTO: LoginReqDTO): UserDTO? {
         val user: UserDTO = loadUserByUsername(loginReqDTO.username)!!
@@ -117,20 +115,21 @@ class UserServiceImpl(
 
             }
 
-            accountStub.doUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), accountStreamObserver)
-            productStub.doUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), productStreamObserver)
+            accountServiceStub.doUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), accountStreamObserver)
+            productServiceStub.doUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), productStreamObserver)
 
             try {
                 countDownLatch.await(500, TimeUnit.MILLISECONDS)
             } catch (ignored: InterruptedException) { }
 
-            if (isAnyRequestNotProcessed) {
-                // TODO: implement
+            if (isAnyRequestNotProcessed.not()) {
+                userRepository.save(user)
+
+                return true
             }
 
-            userRepository.save(user)
-
-            return true
+            accountServiceStub.undoUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), null)
+            productServiceStub.undoUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), null)
         }
 
         return false
