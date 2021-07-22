@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import javax.transaction.Transactional
 
 @Service
 class UserServiceImpl(
@@ -68,6 +69,7 @@ class UserServiceImpl(
         return null
     }
 
+    @Transactional
     override fun withdraw(userDTO: UserDTO): Boolean? {
         val user: User = getUser(userDTO.username)!!
 
@@ -120,11 +122,13 @@ class UserServiceImpl(
             accountServiceStub.doUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), accountStreamObserver)
             productServiceStub.doUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), productStreamObserver)
 
+            var isCountReachedZero: Boolean = false
+
             try {
-                countDownLatch.await(500, TimeUnit.MILLISECONDS)
+                isCountReachedZero = countDownLatch.await(500, TimeUnit.MILLISECONDS)
             } catch (ignored: InterruptedException) { }
 
-            if (isAnyRequestNotProcessed.not()) {
+            if (isAnyRequestNotProcessed.not() && isCountReachedZero) {
                 userRepository.save(user)
 
                 return true
