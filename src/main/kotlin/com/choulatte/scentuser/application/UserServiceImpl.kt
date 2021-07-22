@@ -1,8 +1,9 @@
 package com.choulatte.scentuser.application
 
 import com.choulatte.pay.grpc.AccountServiceGrpc
-import com.choulatte.pay.grpc.PaymentServiceGrpc
+import com.choulatte.pay.grpc.AccountServiceOuterClass
 import com.choulatte.product.grpc.ProductServiceGrpc
+import com.choulatte.product.grpc.ProductServiceOuterClass
 import com.choulatte.scentuser.domain.User
 import com.choulatte.scentuser.domain.UserStatusType
 import com.choulatte.scentuser.dto.LoginReqDTO
@@ -10,9 +11,12 @@ import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.repository.UserRepository
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.grpc.stub.StreamObserver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @Service
 class UserServiceImpl(
@@ -27,8 +31,8 @@ class UserServiceImpl(
     private val productChannel: ManagedChannel = ManagedChannelBuilder
         .forAddress("172.20.10.4", 8091)
         .usePlaintext().build()
-    private val accountStub: AccountServiceGrpc.AccountServiceBlockingStub = AccountServiceGrpc.newBlockingStub(payChannel)
-    private val productStub: ProductServiceGrpc.ProductServiceBlockingStub = ProductServiceGrpc.newBlockingStub(productChannel)
+    private val accountStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
+    private val productStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)
 
     override fun login(loginReqDTO: LoginReqDTO): UserDTO? {
         val user: UserDTO = loadUserByUsername(loginReqDTO.username)!!
@@ -72,7 +76,57 @@ class UserServiceImpl(
         if (passwordEncoder.matches(userDTO.password, user.getPassword())) {
             user.updateStatus(UserStatusType.WITHDRAWAL)
 
-            // TODO: Pending and invalidating user accounts and products using gRPC client Stubs
+            val countDownLatch: CountDownLatch = CountDownLatch(2)
+            var isAnyRequestNotProcessed: Boolean = false
+
+            val accountStreamObserver: StreamObserver<AccountServiceOuterClass.AccountsPendingResponse> = object: StreamObserver<AccountServiceOuterClass.AccountsPendingResponse> {
+                override fun onNext(value: AccountServiceOuterClass.AccountsPendingResponse?) {
+                    if (value?.result == AccountServiceOuterClass.AccountsPendingResponse.Result.OK) {
+                        return
+                    }
+
+                    isAnyRequestNotProcessed = true
+                }
+
+                override fun onError(t: Throwable?) {
+                    isAnyRequestNotProcessed = true
+                }
+
+                override fun onCompleted() {
+                    countDownLatch.countDown()
+                }
+
+            }
+
+            val productStreamObserver: StreamObserver<ProductServiceOuterClass.ProductsPendingResponse> = object: StreamObserver<ProductServiceOuterClass.ProductsPendingResponse> {
+                override fun onNext(value: ProductServiceOuterClass.ProductsPendingResponse?) {
+                    if (value?.result == ProductServiceOuterClass.ProductsPendingResponse.Result.OK) {
+                        return
+                    }
+
+                    isAnyRequestNotProcessed = true
+                }
+
+                override fun onError(t: Throwable?) {
+                    isAnyRequestNotProcessed = true
+                }
+
+                override fun onCompleted() {
+                    countDownLatch.countDown()
+                }
+
+            }
+
+            accountStub.doUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), accountStreamObserver)
+            productStub.doUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), productStreamObserver)
+
+            try {
+                countDownLatch.await(500, TimeUnit.MILLISECONDS)
+            } catch (ignored: InterruptedException) { }
+
+            if (isAnyRequestNotProcessed) {
+                // TODO: implement
+            }
 
             userRepository.save(user)
 
