@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class GrpcConfig {
+class GrpcClientConfig {
     @Bean(name = ["pay"])
     fun setPayChannel(): ManagedChannel {
         return ManagedChannelBuilder.forAddress("172.20.10.3", 8090).usePlaintext().build()

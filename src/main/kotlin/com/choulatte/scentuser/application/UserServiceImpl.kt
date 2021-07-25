@@ -30,9 +30,6 @@ class UserServiceImpl(
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 
-    private val accountServiceStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
-    private val productServiceStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)
-
     override fun login(loginReqDTO: LoginReqDTO): UserDTO? {
         val user: UserDTO = loadUserByUsername(loginReqDTO.username)!!
 
@@ -71,6 +68,9 @@ class UserServiceImpl(
 
     @Transactional
     override fun withdraw(userDTO: UserDTO): Boolean? {
+        val accountServiceStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
+        val productServiceStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)
+        
         val user: User = getUser(userDTO.username)!!
 
         if (passwordEncoder.matches(userDTO.password, user.getPassword())) {
@@ -122,11 +122,9 @@ class UserServiceImpl(
             accountServiceStub.doUserAccountsPending(AccountServiceOuterClass.AccountsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), accountStreamObserver)
             productServiceStub.doUserProductsPending(ProductServiceOuterClass.ProductsPendingRequest.newBuilder().setUserId(user.getId()!!).build(), productStreamObserver)
 
-            var isCountReachedZero: Boolean = false
-
-            try {
-                isCountReachedZero = countDownLatch.await(500, TimeUnit.MILLISECONDS)
-            } catch (ignored: InterruptedException) { }
+            val isCountReachedZero: Boolean = try {
+                countDownLatch.await(500, TimeUnit.MILLISECONDS)
+            } catch (e: InterruptedException) { false }
 
             if (isAnyRequestNotProcessed.not() && isCountReachedZero) {
                 userRepository.save(user)
