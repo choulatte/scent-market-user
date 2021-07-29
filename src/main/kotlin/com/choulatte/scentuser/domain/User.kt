@@ -2,6 +2,7 @@ package com.choulatte.scentuser.domain
 
 import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.exception.UserIllegalStateException
+import java.io.Serializable
 import java.util.*
 import javax.persistence.*
 
@@ -39,7 +40,7 @@ class User(
 
     @Column(name = "validity", nullable = false)
     private var validity: Boolean? = null,
-) {
+) : Serializable {
     fun getId(): Long? {
         return this.id
     }

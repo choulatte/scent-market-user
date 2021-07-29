@@ -2,8 +2,8 @@ package com.choulatte.scentuser.controller
 
 import com.choulatte.scentuser.application.UserService
 import com.choulatte.scentuser.config.JwtTokenProvider
-import com.choulatte.scentuser.dto.LoginReqDTO
-import com.choulatte.scentuser.dto.TokenRespDTO
+import com.choulatte.scentuser.dto.LoginDTO
+import com.choulatte.scentuser.dto.TokenDTO
 import com.choulatte.scentuser.dto.UserDTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,8 +15,8 @@ class UserController(
     private val jwtTokenProvider: JwtTokenProvider
 ) {
     @PostMapping(value = [""])
-    fun login(@RequestBody loginReqDTO: LoginReqDTO): ResponseEntity<TokenRespDTO> {
-        val userDTO: UserDTO? = userService.login(loginReqDTO)
+    fun login(@RequestBody loginDTO: LoginDTO): ResponseEntity<TokenDTO> {
+        val userDTO: UserDTO? = userService.login(loginDTO)
 
         if (userDTO != null) {
             return ResponseEntity.ok(jwtTokenProvider.createToken(userDTO.username, userDTO.roles))

@@ -6,13 +6,15 @@ import com.choulatte.product.grpc.ProductServiceGrpc
 import com.choulatte.product.grpc.ProductServiceOuterClass
 import com.choulatte.scentuser.domain.User
 import com.choulatte.scentuser.domain.UserStatusType
-import com.choulatte.scentuser.dto.LoginReqDTO
+import com.choulatte.scentuser.dto.LoginDTO
 import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.repository.UserRepository
 import io.grpc.ManagedChannel
 import io.grpc.stub.StreamObserver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.concurrent.CountDownLatch
@@ -30,10 +32,11 @@ class UserServiceImpl(
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 
-    override fun login(loginReqDTO: LoginReqDTO): UserDTO? {
-        val user: UserDTO = loadUserByUsername(loginReqDTO.username)!!
+    @Cacheable(value = ["login"], key = "#loginDTO", unless = "#result == null")
+    override fun login(loginDTO: LoginDTO): UserDTO? {
+        val user: UserDTO = loadUserByUsername(loginDTO.username)!!
 
-        if (passwordEncoder.matches(loginReqDTO.password, user.password)) {
+        if (passwordEncoder.matches(loginDTO.password, user.password) && user.isAccountNonExpired) {
             return user.sealPassword()
         }
 
@@ -46,6 +49,7 @@ class UserServiceImpl(
         return userRepository.save(userDTO.toEntity()).getId()
     }
 
+    @CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
     override fun updateUserInfo(userDTO: UserDTO): UserDTO? {
         val user: User = getUser(userDTO.username)!!
 
@@ -56,6 +60,7 @@ class UserServiceImpl(
         return null
     }
 
+    @CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
     override fun updateUserStatus(userDTO: UserDTO): UserDTO? {
         val user: User = getUser(userDTO.username)!!
 
@@ -67,6 +72,7 @@ class UserServiceImpl(
     }
 
     @Transactional
+    @CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result == true")
     override fun withdraw(userDTO: UserDTO): Boolean? {
         val accountServiceStub: AccountServiceGrpc.AccountServiceStub = AccountServiceGrpc.newStub(payChannel)
         val productServiceStub: ProductServiceGrpc.ProductServiceStub = ProductServiceGrpc.newStub(productChannel)

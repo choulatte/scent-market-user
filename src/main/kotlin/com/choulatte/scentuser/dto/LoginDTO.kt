@@ -1,6 +1,6 @@
 package com.choulatte.scentuser.dto
 
-data class LoginReqDTO (
+data class LoginDTO (
     val username: String,
     val password: String
 ) {

@@ -78,4 +78,11 @@ data class UserDTO(
             statusType = UserStatusType.NORMAL,
             validity = true)
     }
+
+    fun toLoginDTO(): LoginDTO {
+        return LoginDTO(
+            username = this.username,
+            password = this.password
+        )
+    }
 }
