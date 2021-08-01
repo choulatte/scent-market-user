@@ -1,9 +1,9 @@
 package com.choulatte.scentuser.application
 
-import com.choulatte.pay.grpc.AccountServiceGrpc
-import com.choulatte.pay.grpc.AccountServiceOuterClass
-import com.choulatte.product.grpc.ProductServiceGrpc
-import com.choulatte.product.grpc.ProductServiceOuterClass
+import com.choulatte.scentpay.grpc.AccountServiceGrpc
+import com.choulatte.scentpay.grpc.AccountServiceOuterClass
+import com.choulatte.scentproduct.grpc.ProductServiceGrpc
+import com.choulatte.scentproduct.grpc.ProductServiceOuterClass
 import com.choulatte.scentuser.domain.User
 import com.choulatte.scentuser.domain.UserStatusType
 import com.choulatte.scentuser.dto.LoginDTO
