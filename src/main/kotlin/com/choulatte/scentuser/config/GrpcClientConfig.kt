@@ -22,12 +22,8 @@ class GrpcClientConfig(
 ) {
 
     @Bean(name = ["pay"])
-    fun setPayChannel(): ManagedChannel {
-        return ManagedChannelBuilder.forAddress(grpcPayServerHost, grpcPayServerPort).usePlaintext().build()
-    }
+    fun setPayChannel(): ManagedChannel = ManagedChannelBuilder.forAddress(grpcPayServerHost, grpcPayServerPort).usePlaintext().build()
 
     @Bean(name = ["product"])
-    fun setProductChannel(): ManagedChannel {
-        return ManagedChannelBuilder.forAddress(grpcProductServerHost, grpcProductServerPort).usePlaintext().build()
-    }
+    fun setProductChannel(): ManagedChannel = ManagedChannelBuilder.forAddress(grpcProductServerHost, grpcProductServerPort).usePlaintext().build()
 }

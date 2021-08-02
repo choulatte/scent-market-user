@@ -26,13 +26,9 @@ class JwtTokenProvider(
             refreshToken = "refresh token is not supported.")
     }
 
-    fun getUserIdx(token: String?): String? {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject
-    }
+    fun getUserIdx(token: String?): String? = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject
 
-    fun resolveToken(request: HttpServletRequest): String? {
-        return request.getHeader("Authorization")
-    }
+    fun resolveToken(request: HttpServletRequest): String? = request.getHeader("Authorization")
 
     fun validateToken(token: String?): Boolean {
         return try {

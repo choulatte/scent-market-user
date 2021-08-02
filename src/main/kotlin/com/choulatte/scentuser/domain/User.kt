@@ -41,27 +41,21 @@ class User(
     @Column(name = "validity", nullable = false)
     private var validity: Boolean? = null,
 ) : Serializable {
-    fun getId(): Long? {
-        return this.id
-    }
+    fun getId(): Long? = this.id
 
-    fun getPassword(): String? {
-        return this.password
-    }
+    fun getPassword(): String? = this.password
 
-    fun toDTO(): UserDTO {
-        return UserDTO(
-            id = this.id,
-            username = this.username.orEmpty(),
-            email = this.email,
-            password = this.password.orEmpty(),
-            roles = this.roles,
-            recordedDate = this.recordedDate,
-            lastModifiedDate = this.lastModifiedDate,
-            statusType = this.statusType,
-            validity = this.validity
-        )
-    }
+    fun toDTO(): UserDTO = UserDTO(
+        id = this.id,
+        username = this.username.orEmpty(),
+        email = this.email,
+        password = this.password.orEmpty(),
+        roles = this.roles,
+        recordedDate = this.recordedDate,
+        lastModifiedDate = this.lastModifiedDate,
+        statusType = this.statusType,
+        validity = this.validity
+    )
 
     fun update(userDTO: UserDTO): User {
         if (this.statusType == UserStatusType.WITHDRAWAL) throw UserIllegalStateException()

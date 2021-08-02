@@ -145,11 +145,7 @@ class UserServiceImpl(
         return false
     }
 
-    override fun loadUserByUsername(username: String): UserDTO? {
-        return getUser(username)?.toDTO()
-    }
+    override fun loadUserByUsername(username: String): UserDTO? = getUser(username)?.toDTO()
 
-    private fun getUser(username: String): User? {
-        return userRepository.findByUsername(username)
-    }
+    private fun getUser(username: String): User? = userRepository.findByUsername(username)
 }

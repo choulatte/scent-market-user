@@ -11,7 +11,5 @@ class EmbeddedRedisConfig(
     var redisPort: Int
 ) {
     @Bean
-    fun embeddedRedis(): RedisServer {
-        return RedisServer.builder().port(redisPort).build()
-    }
+    fun embeddedRedis(): RedisServer = RedisServer.builder().port(redisPort).build()
 }

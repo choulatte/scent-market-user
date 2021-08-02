@@ -19,34 +19,21 @@ data class UserDTO(
     var statusType: UserStatusType?,
     var validity: Boolean?
 ) : UserDetails {
-    override fun getPassword(): String {
-        return this.password
-    }
+    override fun getPassword(): String = this.password
 
-    override fun getUsername(): String {
-        return this.username
-    }
+    override fun getUsername(): String = this.username
 
-    override fun getAuthorities(): Collection<GrantedAuthority?> {
-        return roles.stream().map { role: String? -> SimpleGrantedAuthority(role) }
-            .collect(Collectors.toList())
-    }
+    override fun getAuthorities(): Collection<GrantedAuthority?> = roles.stream()
+        .map { role: String? -> SimpleGrantedAuthority(role) }
+        .collect(Collectors.toList())
 
-    override fun isAccountNonExpired(): Boolean {
-        return this.statusType != UserStatusType.EXPIRED && this.validity == true
-    }
+    override fun isAccountNonExpired(): Boolean = this.statusType != UserStatusType.EXPIRED && this.validity == true
 
-    override fun isAccountNonLocked(): Boolean {
-        return this.statusType != UserStatusType.LOCKED && this.validity == true
-    }
+    override fun isAccountNonLocked(): Boolean = this.statusType != UserStatusType.LOCKED && this.validity == true
 
-    override fun isCredentialsNonExpired(): Boolean {
-        return true
-    }
+    override fun isCredentialsNonExpired(): Boolean = true
 
-    override fun isEnabled(): Boolean {
-        return this.statusType == UserStatusType.NORMAL && this.validity == true
-    }
+    override fun isEnabled(): Boolean = this.statusType == UserStatusType.NORMAL && this.validity == true
 
     fun encodePassword(encode: (String?) -> String): UserDTO {
         this.password = encode(this.password)
@@ -67,22 +54,19 @@ data class UserDTO(
         return this
     }
 
-    fun toEntity(): User {
-        return User(
-            username = this.username,
-            email = this.email,
-            password = this.password,
-            roles = this.roles,
-            recordedDate = Date(),
-            lastModifiedDate = Date(),
-            statusType = UserStatusType.NORMAL,
-            validity = true)
-    }
+    fun toEntity(): User = User(
+        username = this.username,
+        email = this.email,
+        password = this.password,
+        roles = this.roles,
+        recordedDate = Date(),
+        lastModifiedDate = Date(),
+        statusType = UserStatusType.NORMAL,
+        validity = true
+    )
 
-    fun toLoginDTO(): LoginDTO {
-        return LoginDTO(
-            username = this.username,
-            password = this.password
-        )
-    }
+    fun toLoginDTO(): LoginDTO = LoginDTO(
+        username = this.username,
+        password = this.password
+    )
 }
