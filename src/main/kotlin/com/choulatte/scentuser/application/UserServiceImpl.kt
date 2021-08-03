@@ -130,7 +130,7 @@ class UserServiceImpl(
 
             val isCountReachedZero: Boolean = try {
                 countDownLatch.await(500, TimeUnit.MILLISECONDS)
-            } catch (e: InterruptedException) { false }
+            } catch (e: InterruptedException) { return false }
 
             if (isAnyRequestNotProcessed.not() && isCountReachedZero) {
                 userRepository.save(user)

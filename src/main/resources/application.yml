@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: user
+  datasource:
+    url: jdbc:mysql://203.250.148.28:3306/dev_user?serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false
+    username: root
+    password: Graphics405!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    generate-ddl: false
+  redis:
+    host: localhost
+    port: 6379
+
+server:
+  port: 8080
+
+grpc:
+  pay:
+    server:
+      host: 172.20.10.3
+      port: 8090
+  product:
+    server:
+      host: 172.20.10.4
+      port: 8091
