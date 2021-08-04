@@ -14,7 +14,9 @@ import io.grpc.stub.StreamObserver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.concurrent.CountDownLatch
@@ -49,7 +51,12 @@ class UserServiceImpl(
         return userRepository.save(userDTO.toEntity()).getId()
     }
 
-    @CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
+
+    @Caching(evict = [
+        CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
+    ], put = [
+        CachePut(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
+    ])
     override fun updateUserInfo(userDTO: UserDTO): UserDTO? {
         val user: User = getUser(userDTO.username)!!
 
