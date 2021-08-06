@@ -1,6 +1,6 @@
 package com.choulatte.scentuser.config
 
-import com.choulatte.scentuser.application.UserService
+import com.choulatte.scentuser.service.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager

@@ -1,6 +1,6 @@
 package com.choulatte.scentuser.controller
 
-import com.choulatte.scentuser.application.UserService
+import com.choulatte.scentuser.service.UserService
 import com.choulatte.scentuser.config.JwtTokenProvider
 import com.choulatte.scentuser.dto.LoginDTO
 import com.choulatte.scentuser.dto.TokenDTO

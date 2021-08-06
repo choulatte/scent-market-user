@@ -1,4 +1,4 @@
-package com.choulatte.scentuser.application
+package com.choulatte.scentuser.service
 
 import com.choulatte.scentuser.dto.LoginDTO
 import com.choulatte.scentuser.dto.UserDTO

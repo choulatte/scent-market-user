@@ -1,4 +1,4 @@
-package com.choulatte.scentuser.application
+package com.choulatte.scentuser.service
 
 import com.choulatte.scentpay.grpc.AccountServiceGrpc
 import com.choulatte.scentpay.grpc.AccountServiceOuterClass
@@ -50,7 +50,6 @@ class UserServiceImpl(
 
         return userRepository.save(userDTO.toEntity()).getId()
     }
-
 
     @Caching(evict = [
         CacheEvict(value = ["login"], key = "#userDTO.toLoginDTO()", condition = "#result != null")
