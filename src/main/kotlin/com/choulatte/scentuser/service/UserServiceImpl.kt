@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.cache.annotation.Caching
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.concurrent.CountDownLatch
@@ -32,6 +33,7 @@ class UserServiceImpl(
     private val productChannel: ManagedChannel
 ): UserService {
     @Autowired
+    @Lazy
     lateinit var passwordEncoder: PasswordEncoder
 
     @Cacheable(value = ["login"], key = "#loginDTO", unless = "#result == null")

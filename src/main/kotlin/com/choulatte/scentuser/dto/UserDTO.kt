@@ -42,7 +42,7 @@ data class UserDTO(
     }
 
     fun sealPassword(): UserDTO {
-        this.password = "SEALING"
+        this.password = "SEALED"
 
         return this
     }
