@@ -21,6 +21,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.grpc:grpc-netty:1.38.0")
@@ -42,6 +43,12 @@ sourceSets {
             srcDirs("scent-market-grpc/build/generated/source/proto/main/grpc")
             srcDirs("scent-market-grpc/build/generated/source/proto/main/java")
         }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.3")
     }
 }
 
