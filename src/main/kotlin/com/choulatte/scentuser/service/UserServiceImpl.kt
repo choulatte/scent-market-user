@@ -5,7 +5,6 @@ import com.choulatte.scentpay.grpc.AccountServiceOuterClass
 import com.choulatte.scentproduct.grpc.ProductServiceGrpc
 import com.choulatte.scentproduct.grpc.ProductServiceOuterClass
 import com.choulatte.scentuser.domain.User
-import com.choulatte.scentuser.domain.UserStatusType
 import com.choulatte.scentuser.dto.LoginDTO
 import com.choulatte.scentuser.dto.UserDTO
 import com.choulatte.scentuser.repository.UserRepository
@@ -88,7 +87,7 @@ class UserServiceImpl(
         val user: User = getUser(userDTO.username)!!
 
         if (passwordEncoder.matches(userDTO.password, user.getPassword())) {
-            user.updateStatus(UserStatusType.WITHDRAWAL)
+            user.updateStatus(User.StatusType.WITHDRAWAL)
 
             val countDownLatch: CountDownLatch = CountDownLatch(2)
             var isAnyRequestNotProcessed: Boolean = false

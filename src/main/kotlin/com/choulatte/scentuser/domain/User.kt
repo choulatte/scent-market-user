@@ -36,7 +36,7 @@ class User(
 
     @Column(name = "status_type", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private var statusType: UserStatusType? = null,
+    private var statusType: StatusType? = null,
 
     @Column(name = "validity", nullable = false)
     private var validity: Boolean? = null,
@@ -58,7 +58,7 @@ class User(
     )
 
     fun update(userDTO: UserDTO): User {
-        if (this.statusType == UserStatusType.WITHDRAWAL) throw UserIllegalStateException()
+        if (this.statusType == StatusType.WITHDRAWAL) throw UserIllegalStateException()
 
         this.email = userDTO.email
         this.lastModifiedDate = Date()
@@ -66,12 +66,19 @@ class User(
         return this
     }
 
-    fun updateStatus(userStatusType: UserStatusType): User {
-        if (this.statusType == UserStatusType.WITHDRAWAL) throw UserIllegalStateException()
+    fun updateStatus(userStatusType: StatusType): User {
+        if (this.statusType == StatusType.WITHDRAWAL) throw UserIllegalStateException()
 
         this.statusType = userStatusType
         this.lastModifiedDate = Date()
 
         return this
+    }
+
+    enum class StatusType {
+        NORMAL,
+        LOCKED,
+        EXPIRED,
+        WITHDRAWAL
     }
 }
