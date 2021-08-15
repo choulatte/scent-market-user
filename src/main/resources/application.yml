@@ -22,6 +22,12 @@ eureka:
     register-with-eureka: true
     fetchRegistry: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+
 server:
   port: 8081
 

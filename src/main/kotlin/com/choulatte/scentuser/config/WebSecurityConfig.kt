@@ -35,6 +35,7 @@ class WebSecurityConfig (
             .cors().and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
+            .antMatchers("/actuator/**").permitAll()
             .antMatchers(HttpMethod.POST, "/users", "/users/join").permitAll()
             .antMatchers(HttpMethod.PUT, "/users").permitAll()
             .antMatchers(HttpMethod.DELETE, "/users").permitAll()
