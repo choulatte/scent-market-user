@@ -36,6 +36,7 @@ class WebSecurityConfig (
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
             .antMatchers("/actuator/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/users").permitAll()
             .antMatchers(HttpMethod.POST, "/users", "/users/join").permitAll()
             .antMatchers(HttpMethod.PUT, "/users").permitAll()
             .antMatchers(HttpMethod.DELETE, "/users").permitAll()
