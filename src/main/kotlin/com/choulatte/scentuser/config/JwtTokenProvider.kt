@@ -16,8 +16,9 @@ class JwtTokenProvider(
         secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
     }
 
-    fun createToken(username: String?, roles: List<String?>): TokenDTO? {
+    fun createToken(userIdx: Long?, username: String?, roles: List<String?>): TokenDTO? {
         val claims = Jwts.claims().setSubject(username)
+        claims["user_idx"] = userIdx.toString()
         claims["roles"] = roles
         val now = Date()
         return TokenDTO(validationToken = Jwts.builder().setClaims(claims).setIssuedAt(now)
@@ -26,7 +27,7 @@ class JwtTokenProvider(
             refreshToken = "refresh token is not supported.")
     }
 
-    fun getUserIdx(token: String?): String? = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject
+    fun getUsername(token: String?): String? = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject
 
     fun resolveToken(request: HttpServletRequest): String? = request.getHeader("Authorization")
 

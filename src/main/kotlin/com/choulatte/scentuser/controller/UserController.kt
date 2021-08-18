@@ -15,13 +15,17 @@ class UserController(
     private val userService: UserService,
     private val jwtTokenProvider: JwtTokenProvider
 ) {
+    @GetMapping(value = [""])
+    @ApiOperation(value = "사용자 정보 조회", notes = "인증된 사용자의 정보를 반환합니다.")
+    fun getInfo(@RequestHeader(value = "User-Idx") userIdx: String): ResponseEntity<String> = ResponseEntity.ok(userIdx)
+
     @PostMapping(value = [""])
     @ApiOperation(value = "사용자 인증", notes = "사용자 인증 요청을 처리하고 인증 토큰을 반환합니다.")
     fun login(@RequestBody loginDTO: LoginDTO): ResponseEntity<TokenDTO> {
         val userDTO: UserDTO? = userService.login(loginDTO)
 
         if (userDTO != null) {
-            return ResponseEntity.ok(jwtTokenProvider.createToken(userDTO.username, userDTO.roles))
+            return ResponseEntity.ok(jwtTokenProvider.createToken(userDTO.id, userDTO.username, userDTO.roles))
         }
 
         return ResponseEntity.notFound().build()
