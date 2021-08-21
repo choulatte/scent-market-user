@@ -37,9 +37,9 @@ class UserController(
 
     @PutMapping(value = [""])
     @ApiOperation(value = "사용자 정보 수정", notes = "등록된 사용자 정보를 수정합니다.")
-    fun updateUserInfo(@RequestBody userDTO: UserDTO): ResponseEntity<UserDTO> = ResponseEntity.ok(userService.updateUserInfo(userDTO))
+    fun updateUserInfo(@RequestHeader(value = "User-Idx") userIdx: String, @RequestBody userDTO: UserDTO): ResponseEntity<UserDTO> = ResponseEntity.ok(userService.updateUserInfo(userDTO))
 
     @DeleteMapping(value = [""])
     @ApiOperation(value = "사용자 탈퇴", notes = "등록된 사용자를 탈퇴 처리합니다.")
-    fun withdraw(@RequestBody userDTO: UserDTO): ResponseEntity<Boolean> = ResponseEntity.ok(userService.withdraw(userDTO))
+    fun withdraw(@RequestHeader(value = "User-Idx") userIdx: String, @RequestBody userDTO: UserDTO): ResponseEntity<Boolean> = ResponseEntity.ok(userService.withdraw(userDTO))
 }
